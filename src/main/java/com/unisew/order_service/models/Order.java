@@ -8,7 +8,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -35,22 +38,12 @@ public class Order {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
-    @Column(name = "`school_deadline`")
-    LocalDate schoolDeadline;
-
-    @Column(name = "`garment_deadline`")
-    LocalDate garmentDeadline;
+    LocalDate deadline;
 
     long price;
 
-    @Column(name = "`ship_fee`")
-    long shipFee;
-
     @Column(name = "`service_fee`")
     long serviceFee;
-
-    @Column(name = "`design_fee`")
-    long designFee;
 
     @Column(name = "`order_date`")
     LocalDate orderDate;
@@ -58,26 +51,19 @@ public class Order {
     String note;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "`school_status`")
-    Status schoolStatus;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "`garment_status`")
-    Status garmentStatus;
+    Status status;
 
     @Column(name = "`school_id`")
-    Integer schoolId;
+    int schoolId;
 
-    @Column(name = "`contract_id`")
-    Integer contractId;
-
-    @OneToMany(mappedBy = "order")
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    List<SubOrder> subOrders;
+    @Column(name = "`garment_id`")
+    int garmentId;
 
     @OneToMany(mappedBy = "order")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     List<OrderDetail> orderDetails;
+
+    @Column(name = "`feedback_id`")
+    int feedbackId;
 }

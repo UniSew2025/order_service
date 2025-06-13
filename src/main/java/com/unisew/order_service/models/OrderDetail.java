@@ -40,7 +40,7 @@ public class OrderDetail {
     @JoinColumn(name = "`order_id`")
     Order order;
 
-    @Column(name = "`item_id`")
-    Integer designRequestItemId;
+    @Column(name = "`cloth_id`")
+    int clothId;
 
 }
