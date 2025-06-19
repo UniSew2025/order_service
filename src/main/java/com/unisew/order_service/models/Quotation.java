@@ -10,40 +10,33 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @Entity
-@Table(name = "`order`")
+@Table(name = "`quotation`")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Order {
+public class Quotation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
 
-    LocalDate deadline;
+    @Column(name = "`early_delivery_date`")
+    LocalDate earlyDeliveryDate;
 
     long price;
-
-    @Column(name = "`service_fee`")
-    long serviceFee;
 
     @Column(name = "`order_date`")
     LocalDate orderDate;
@@ -53,22 +46,10 @@ public class Order {
     @Enumerated(EnumType.STRING)
     Status status;
 
-    @Column(name = "`school_id`")
-    int schoolId;
-
     @Column(name = "`garment_id`")
     int garmentId;
 
-    @OneToMany(mappedBy = "order")
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    List<OrderDetail> orderDetails;
-
-    @Column(name = "`feedback_id`")
-    int feedbackId;
-
-    @OneToMany(mappedBy = "order")
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
-    List<Quotation> quotations;
+    @ManyToOne
+    @JoinColumn(name = "`order_id`")
+    Order order;
 }
