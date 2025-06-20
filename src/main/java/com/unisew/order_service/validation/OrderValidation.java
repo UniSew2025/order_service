@@ -6,6 +6,7 @@ import com.unisew.order_service.requests.CreateOrderRequest;
 import com.unisew.order_service.requests.CreateQuotationRequest;
 import com.unisew.order_service.requests.ProcessQuotationRequest;
 import com.unisew.order_service.requests.UpdateOrderRequest;
+import com.unisew.order_service.requests.ViewOrderRequest;
 
 public class OrderValidation {
 
@@ -13,7 +14,7 @@ public class OrderValidation {
         return "";
     }
 
-    public static String validateViewOrder(CreateOrderRequest request){
+    public static String validateViewOrder(ViewOrderRequest request){
         return "";
     }
 

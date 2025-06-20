@@ -5,9 +5,9 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-public enum Status {
+public enum AppConfig {
 
-    ORDER_QUEUE("queue");
+    SERVICE_FEE(500000);
 
-    private final String value;
+    private final long fee;
 }

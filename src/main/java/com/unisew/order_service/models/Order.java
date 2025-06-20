@@ -54,10 +54,10 @@ public class Order {
     Status status;
 
     @Column(name = "`school_id`")
-    int schoolId;
+    Integer schoolId;
 
     @Column(name = "`garment_id`")
-    int garmentId;
+    Integer garmentId;
 
     @OneToMany(mappedBy = "order")
     @ToString.Exclude
@@ -65,7 +65,7 @@ public class Order {
     List<OrderDetail> orderDetails;
 
     @Column(name = "`feedback_id`")
-    int feedbackId;
+    Integer feedbackId;
 
     @OneToMany(mappedBy = "order")
     @ToString.Exclude
