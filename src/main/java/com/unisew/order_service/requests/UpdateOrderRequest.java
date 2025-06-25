@@ -7,11 +7,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateOrderRequest {
-    String data;
+    int orderId;
+    String note;
+    LocalDate deadline;
+    long price;
+    long serviceFee;
+
 }

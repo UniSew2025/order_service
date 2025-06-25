@@ -14,7 +14,7 @@ public interface OrderService {
 
     ResponseEntity<ResponseObject> createOrder(CreateOrderRequest request);
 
-    ResponseEntity<ResponseObject> viewOrder(ViewOrderRequest request);
+    ResponseEntity<ResponseObject> viewOrder(int orderId);
 
     ResponseEntity<ResponseObject> updateOrder(UpdateOrderRequest request);
 
