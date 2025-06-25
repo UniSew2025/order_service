@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -66,8 +67,8 @@ public class OrderImpl implements OrderService {
     private ResponseEntity<ResponseObject> createOrderDetail(Order order, CreateOrderRequest request) {
         List<OrderDetail> orderDetailList = new ArrayList<>();
 
-        for(CreateOrderRequest.Cloth cloth: request.getClothList()) {
-            for(CreateOrderRequest.Size size: cloth.getSizeList()) {
+        for (CreateOrderRequest.Cloth cloth : request.getClothList()) {
+            for (CreateOrderRequest.Size size : cloth.getSizeList()) {
                 orderDetailList.add(
                         OrderDetail.builder()
                                 .clothId(cloth.getId())
@@ -79,7 +80,7 @@ public class OrderImpl implements OrderService {
             }
         }
 
-        if(orderDetailList.isEmpty()) {
+        if (orderDetailList.isEmpty()) {
             return ResponseBuilder.build(HttpStatus.BAD_REQUEST, "Fail to create order", null);
         }
 
@@ -93,9 +94,40 @@ public class OrderImpl implements OrderService {
         String error = OrderValidation.validateViewOrder(request);
         if (!error.isEmpty()) return ResponseBuilder.build(HttpStatus.BAD_REQUEST, error, null);
 
-        
 
         return null;
+    }
+
+    private List<Map<String, Object>> getOrderDetailsByOrder(Order order) {
+        return order.getOrderDetails().stream()
+                .map(detail -> {
+                            Map<String, Object> detailData = new HashMap<>();
+                            detailData.put("id", detail.getId());
+                            detailData.put("clothId", detail.getClothId());
+                            detailData.put("size", detail.getSize().getSize().toUpperCase());
+                            detailData.put("quantity", detail.getQuantity());
+                            return detailData;
+                        }
+                )
+                .toList();
+    }
+
+    private List<Map<String, Object>> getQuotationsByOrder(Order order) {
+        return order.getQuotations().stream()
+                .map(
+                        quotation -> {
+                            Map<String, Object> quotationData = new HashMap<>();
+                            quotationData.put("id", quotation.getId());
+                            quotationData.put("garmentId", quotation.getGarmentId());
+                            quotationData.put("earlyDeliveryDate", quotation.getEarlyDeliveryDate());
+                            quotationData.put("expirationDate", quotation.getExpirationDate());
+                            quotationData.put("price", quotation.getPrice());
+                            quotationData.put("note", quotation.getNote());
+                            quotationData.put("status", quotation.getStatus().getValue().toLowerCase());
+                            return quotationData;
+                        }
+                )
+                .toList();
     }
 
     @Override

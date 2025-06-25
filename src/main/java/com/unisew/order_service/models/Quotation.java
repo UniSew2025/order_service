@@ -36,6 +36,9 @@ public class Quotation {
     @Column(name = "`early_delivery_date`")
     LocalDate earlyDeliveryDate;
 
+    @Column(name = "`expiration_date`")
+    LocalDate expirationDate;
+
     long price;
 
     @Column(name = "`order_date`")
