@@ -14,7 +14,7 @@ public class OrderValidation {
         return "";
     }
 
-    public static String validateViewOrder(ViewOrderRequest request){
+    public static String validateViewOrder(int orderId){
         return "";
     }
 
