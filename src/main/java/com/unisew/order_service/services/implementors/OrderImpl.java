@@ -12,7 +12,6 @@ import com.unisew.order_service.repositories.QuotationRepo;
 import com.unisew.order_service.requests.CreateOrderRequest;
 import com.unisew.order_service.requests.CreateQuotationRequest;
 import com.unisew.order_service.requests.ProcessQuotationRequest;
-import com.unisew.order_service.requests.UpdateOrderRequest;
 import com.unisew.order_service.response.ResponseObject;
 import com.unisew.order_service.services.OrderService;
 import com.unisew.order_service.utils.ResponseBuilder;
