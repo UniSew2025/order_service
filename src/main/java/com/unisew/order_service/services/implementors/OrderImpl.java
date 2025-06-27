@@ -9,8 +9,6 @@ import com.unisew.order_service.models.Quotation;
 import com.unisew.order_service.repositories.OrderDetailRepo;
 import com.unisew.order_service.repositories.OrderRepo;
 import com.unisew.order_service.repositories.QuotationRepo;
-import com.unisew.order_service.requests.AssignGarmentRequest;
-import com.unisew.order_service.requests.CancelOrderRequest;
 import com.unisew.order_service.requests.CreateOrderRequest;
 import com.unisew.order_service.requests.CreateQuotationRequest;
 import com.unisew.order_service.requests.ProcessQuotationRequest;
@@ -142,7 +140,6 @@ public class OrderImpl implements OrderService {
             map.put("id", quotation.getId());
             map.put("earlyDeliveryDate", quotation.getEarlyDeliveryDate());
             map.put("price", quotation.getPrice());
-            map.put("orderDate", quotation.getOrderDate());
             map.put("note", quotation.getNote());
             map.put("status", quotation.getStatus());
             map.put("garmentId", quotation.getGarmentId());
@@ -150,41 +147,33 @@ public class OrderImpl implements OrderService {
         }).toList();
     }
 
-    private List<Map<String, Object>> getOrderDetailsByOrder(Order order) {
-        return order.getOrderDetails().stream()
-                .map(detail -> {
-                            Map<String, Object> detailData = new HashMap<>();
-                            detailData.put("id", detail.getId());
-                            detailData.put("clothId", detail.getClothId());
-                            detailData.put("size", detail.getSize().getSize().toUpperCase());
-                            detailData.put("quantity", detail.getQuantity());
-                            return detailData;
-                        }
-                )
-                .toList();
-    }
+    @Override
+    public ResponseEntity<ResponseObject> cancelOrder(int id) {
+        String error = OrderValidation.validateCancelOrder(id);
+        if (!error.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResponseObject.builder().message(error).build());
+        }
 
-    private List<Map<String, Object>> getQuotationsByOrder(Order order) {
-        return order.getQuotations().stream()
-                .map(
-                        quotation -> {
-                            Map<String, Object> quotationData = new HashMap<>();
-                            quotationData.put("id", quotation.getId());
-                            quotationData.put("garmentId", quotation.getGarmentId());
-                            quotationData.put("earlyDeliveryDate", quotation.getEarlyDeliveryDate());
-                            quotationData.put("expirationDate", quotation.getExpirationDate());
-                            quotationData.put("price", quotation.getPrice());
-                            quotationData.put("note", quotation.getNote());
-                            quotationData.put("status", quotation.getStatus().getValue().toLowerCase());
-                            return quotationData;
-                        }
-                )
-                .toList();
+        Order order = orderRepo.findById(id).orElse(null);
+        if (order == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ResponseObject.builder().message("Order not found").build());
+        }
+
+        order.setStatus(Status.ORDER_CANCELED);
+        orderRepo.save(order);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ResponseObject.builder()
+                        .message("Cancel order successfully")
+                        .data(buildOrder(order))
+                        .build());
     }
 
     @Override
-    public ResponseEntity<ResponseObject> updateOrder(UpdateOrderRequest request) {
-        String error = OrderValidation.validateUpdateOrder(request);
+    public ResponseEntity<ResponseObject> createQuotation(CreateQuotationRequest request) {
+        String error = OrderValidation.validateCreateQuotation(request);
         if (!error.isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ResponseObject.builder().message(error).build());
@@ -196,44 +185,71 @@ public class OrderImpl implements OrderService {
                     .body(ResponseObject.builder().message("Order not found").build());
         }
 
-        order.setDeadline(request.getDeadline());
-        order.setNote(request.getNote());
-        order.setPrice(request.getPrice());
-        order.setServiceFee(request.getServiceFee());
-        orderRepo.save(order);
+        Quotation quotation = Quotation.builder()
+                .earlyDeliveryDate(request.getEarlyDeliveryDate())
+                .price(request.getPrice())
+                .note(request.getNote())
+                .status(Status.ORDER_PENDING_QUOTE)
+                .garmentId(request.getGarmentId())
+                .order(order)
+                .build();
 
-        return ResponseEntity.status(HttpStatus.OK)
+        quotationRepo.save(quotation);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseObject.builder()
-                        .message("Update order successfully")
-                        .data(buildOrder(order))
+                        .message("Create quotation successfully")
                         .build());
     }
 
     @Override
-    public ResponseEntity<ResponseObject> cancelOrder(CancelOrderRequest request) {
-        String error = OrderValidation.validateCancelOrder(request);
-        if (!error.isEmpty()) return ResponseBuilder.build(HttpStatus.BAD_REQUEST, error, null);
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<ResponseObject> createQuotation(CreateQuotationRequest request) {
-        String error = OrderValidation.validateCreateQuotation(request);
-        if (!error.isEmpty()) return ResponseBuilder.build(HttpStatus.BAD_REQUEST, error, null);
-        return null;
-    }
-
-    @Override
-    public ResponseEntity<ResponseObject> processQuotation(ProcessQuotationRequest request, String action) {
+    public ResponseEntity<ResponseObject> processQuotation(ProcessQuotationRequest request) {
         String error = OrderValidation.validateProcessQuotation(request);
-        if (!error.isEmpty()) return ResponseBuilder.build(HttpStatus.BAD_REQUEST, error, null);
-        return null;
+        if (!error.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResponseObject.builder().message(error).build());
+        }
+
+        Quotation quotation = quotationRepo.findById(request.getQuotationId()).orElse(null);
+        if (quotation == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ResponseObject.builder().message("Quotation not found").build());
+        }
+
+        Order order = quotation.getOrder();
+        if (order == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ResponseObject.builder().message("Order not found for this quotation").build());
+        }
+
+        if ("accept".equalsIgnoreCase(request.getAction())) {
+            quotation.setStatus(Status.QUOTATION_ACCEPTED);
+
+            order.setPrice(quotation.getPrice());
+            order.setDeadline(quotation.getEarlyDeliveryDate());
+            long serviceFee = Math.round(quotation.getPrice() * 0.1);
+            order.setServiceFee(serviceFee);
+            order.setStatus(Status.ORDER_PAID);
+
+            orderRepo.save(order);
+            quotationRepo.save(quotation);
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ResponseObject.builder()
+                            .message("Quotation accepted and order updated successfully")
+                            .build());
+        } else if ("reject".equalsIgnoreCase(request.getAction())) {
+            quotation.setStatus(Status.QUOTATION_REJECTED);
+            quotationRepo.save(quotation);
+
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ResponseObject.builder()
+                            .message("Quotation rejected successfully")
+                            .build());
+        } else {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ResponseObject.builder().message("Invalid action").build());
+        }
     }
 
-    @Override
-    public ResponseEntity<ResponseObject> assignGarment(AssignGarmentRequest request) {
-        String error = OrderValidation.validateAssignGarment(request);
-        if (!error.isEmpty()) return ResponseBuilder.build(HttpStatus.BAD_REQUEST, error, null);
-        return null;
-    }
 }

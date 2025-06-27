@@ -20,7 +20,10 @@ public enum Status {
     ORDER_SEWING("sewing"),
     ORDER_EMBROIDERING("embroidering"),
     ORDER_HAND_SEWING("hand_sewing"),
-    ORDER_COMPLETED("completed"),;
+    ORDER_CANCELED("canceled"),
+    ORDER_COMPLETED("completed"),
+    QUOTATION_ACCEPTED("accepted"),
+    QUOTATION_REJECTED("rejected"),;
 
     private final String value;
 }

@@ -16,13 +16,10 @@ public interface OrderService {
 
     ResponseEntity<ResponseObject> viewOrder(int orderId);
 
-    ResponseEntity<ResponseObject> updateOrder(UpdateOrderRequest request);
-
-    ResponseEntity<ResponseObject> cancelOrder(CancelOrderRequest request);
+    ResponseEntity<ResponseObject> cancelOrder(int orderId);
 
     ResponseEntity<ResponseObject> createQuotation(CreateQuotationRequest request);
 
-    ResponseEntity<ResponseObject> processQuotation(ProcessQuotationRequest request, String action);
+    ResponseEntity<ResponseObject> processQuotation(ProcessQuotationRequest request);
 
-    ResponseEntity<ResponseObject> assignGarment(AssignGarmentRequest request);
 }

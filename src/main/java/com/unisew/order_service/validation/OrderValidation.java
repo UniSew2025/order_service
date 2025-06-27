@@ -22,7 +22,7 @@ public class OrderValidation {
         return "";
     }
 
-    public static String validateCancelOrder(CancelOrderRequest request){
+    public static String validateCancelOrder(int orderId){
         return "";
     }
 

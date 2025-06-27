@@ -13,5 +13,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProcessQuotationRequest {
-    String data;
+    int quotationId;
+    String action;
 }
