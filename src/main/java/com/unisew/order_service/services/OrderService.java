@@ -10,7 +10,7 @@ public interface OrderService {
 
     ResponseEntity<ResponseObject> createOrder(CreateOrderRequest request);
 
-    ResponseEntity<ResponseObject> viewOrder(int orderId);
+    ResponseEntity<ResponseObject> viewOrders();
 
     ResponseEntity<ResponseObject> cancelOrder(int orderId);
 

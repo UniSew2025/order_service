@@ -14,6 +14,7 @@ import com.unisew.order_service.requests.CreateQuotationRequest;
 import com.unisew.order_service.requests.ProcessQuotationRequest;
 import com.unisew.order_service.response.ResponseObject;
 import com.unisew.order_service.services.OrderService;
+import com.unisew.order_service.utils.AccessCurrentLoginUser;
 import com.unisew.order_service.utils.ResponseBuilder;
 import com.unisew.order_service.validation.OrderValidation;
 import lombok.AccessLevel;
@@ -69,11 +70,13 @@ public class OrderImpl implements OrderService {
 
         for (CreateOrderRequest.Cloth cloth : request.getClothList()) {
             for (CreateOrderRequest.Size size : cloth.getSizeList()) {
+                ClothSize cSize = ClothSize.findByNameAndTypeAndGender(size.getName(), cloth.getType(), cloth.getGender());
+
                 orderDetailList.add(
                         OrderDetail.builder()
                                 .clothId(cloth.getId())
                                 .order(order)
-                                .size(ClothSize.valueOf(size.getName().toUpperCase()))
+                                .size(cSize)
                                 .quantity(size.getQuantity())
                                 .build()
                 );
@@ -88,41 +91,45 @@ public class OrderImpl implements OrderService {
     }
 
     @Override
-    public ResponseEntity<ResponseObject> viewOrder(int id) {
-        String error = OrderValidation.validateViewOrder(id);
-        if (!error.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ResponseObject.builder().message(error).build());
+    public ResponseEntity<ResponseObject> viewOrders() {
+//        String error = OrderValidation.validateViewOrder(id);
+//        if (!error.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+//                    .body(ResponseObject.builder().message(error).build());
+//        }
+        Integer accountId = AccessCurrentLoginUser.getId();
+        if (accountId == null){
+            return ResponseBuilder.build(HttpStatus.FORBIDDEN, "Fail to view order", null);
         }
 
-        Order order = orderRepo.findById(id).orElse(null);
-        if (order == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ResponseObject.builder().message("Order not found").build());
-        }
+        List<Order> orders = orderRepo.findAllBySchoolId(accountId);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseObject.builder()
-                        .message("View order successfully")
-                        .data(buildOrder(order))
+                        .message("")
+                        .data(buildOrder(orders))
                         .build());
     }
 
-    private Map<String, Object> buildOrder(Order order) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("id", order.getId());
-        data.put("deadline", order.getDeadline());
-        data.put("price", order.getPrice());
-        data.put("serviceFee", order.getServiceFee());
-        data.put("orderDate", order.getOrderDate());
-        data.put("note", order.getNote());
-        data.put("status", order.getStatus());
-        data.put("schoolId", order.getSchoolId());
-        data.put("garmentId", order.getGarmentId());
-        data.put("orderDetails", buildOrderDetails(order.getOrderDetails()));
-        data.put("quotations", buildQuotations(order.getQuotations()));
-        data.put("feedbackId", order.getFeedbackId());
-        return data;
+    private List<Map<String, Object>> buildOrder(List<Order> orders) {
+        return orders.stream().map(
+                order -> {
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("id", order.getId());
+                    data.put("deadline", order.getDeadline());
+                    data.put("price", order.getPrice());
+                    data.put("serviceFee", order.getServiceFee());
+                    data.put("orderDate", order.getOrderDate());
+                    data.put("note", order.getNote());
+                    data.put("status", order.getStatus().getValue());
+                    data.put("schoolId", order.getSchoolId());
+                    data.put("garmentId", order.getGarmentId());
+                    data.put("orderDetails", buildOrderDetails(order.getOrderDetails()));
+                    data.put("quotations", buildQuotations(order.getQuotations()));
+                    data.put("feedbackId", order.getFeedbackId());
+                    return data;
+                }
+        ).toList();
     }
 
     private List<Map<String, Object>> buildOrderDetails(List<OrderDetail> orderDetails) {
@@ -130,7 +137,7 @@ public class OrderImpl implements OrderService {
         return orderDetails.stream().map(detail -> {
             Map<String, Object> map = new HashMap<>();
             map.put("id", detail.getId());
-            map.put("size", detail.getSize());
+            map.put("size", detail.getSize().getSize());
             map.put("quantity", detail.getQuantity());
             map.put("clothId", detail.getClothId());
             return map;
@@ -171,7 +178,7 @@ public class OrderImpl implements OrderService {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ResponseObject.builder()
                         .message("Cancel order successfully")
-                        .data(buildOrder(order))
+                        .data(null)
                         .build());
     }
 

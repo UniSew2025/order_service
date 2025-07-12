@@ -29,10 +29,10 @@ public class OrderController {
         return orderService.createOrder(request);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("")
     @PreAuthorize("hasRole('SCHOOL') or hasRole('GARMENT')")
-    public ResponseEntity<ResponseObject> viewOrder(@PathVariable("id") int orderId) {
-        return orderService.viewOrder(orderId);
+    public ResponseEntity<ResponseObject> viewOrders() {
+        return orderService.viewOrders();
     }
 
     @DeleteMapping("/{id}")
