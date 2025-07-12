@@ -41,9 +41,6 @@ public class Quotation {
 
     long price;
 
-    @Column(name = "`order_date`")
-    LocalDate orderDate;
-
     String note;
 
     @Enumerated(EnumType.STRING)
