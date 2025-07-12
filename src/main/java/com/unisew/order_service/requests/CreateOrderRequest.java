@@ -28,6 +28,8 @@ public class CreateOrderRequest {
     @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class Cloth {
         Integer id;
+        String type;
+        String gender;
         List<Size> sizeList;
     }
 
