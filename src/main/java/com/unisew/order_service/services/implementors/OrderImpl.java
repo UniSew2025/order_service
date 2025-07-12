@@ -16,7 +16,9 @@ import com.unisew.order_service.response.ResponseObject;
 import com.unisew.order_service.services.OrderService;
 import com.unisew.order_service.utils.ResponseBuilder;
 import com.unisew.order_service.validation.OrderValidation;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -30,11 +32,14 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class OrderImpl implements OrderService {
 
-    private final OrderRepo orderRepo;
-    private final OrderDetailRepo orderDetailRepo;
-    private final QuotationRepo quotationRepo;
+    OrderRepo orderRepo;
+
+    OrderDetailRepo orderDetailRepo;
+
+    QuotationRepo quotationRepo;
 
     @Override
     @Transactional
