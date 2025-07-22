@@ -9,8 +9,7 @@ public enum Status {
 
     ORDER_CREATED("created"),
     ORDER_PENDING_QUOTE("pending_quote"),
-    ORDER_PAID("paid"),
-    ORDER_UNPAID("unpaid"),
+    ORDER_PROCESSING("processing"),
     ORDER_FABRIC_PREPARATION("fabric_preparation"),
     ORDER_CUTTING("cutting"),
     ORDER_PATCHING("patching"),
@@ -20,10 +19,11 @@ public enum Status {
     ORDER_SEWING("sewing"),
     ORDER_EMBROIDERING("embroidering"),
     ORDER_HAND_SEWING("hand_sewing"),
-    ORDER_CANCELED("canceled"),
+    ORDER_CANCELED("canceled"),//School cancel and no compensation
+    ORDER_DELIVERING("delivering"),
     ORDER_COMPLETED("completed"),
     QUOTATION_ACCEPTED("accepted"),
-    QUOTATION_REJECTED("rejected"),;
+    QUOTATION_REJECTED("rejected");
 
     private final String value;
 }
