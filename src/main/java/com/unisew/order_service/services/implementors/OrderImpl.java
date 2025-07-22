@@ -87,7 +87,9 @@ public class OrderImpl implements OrderService {
             return ResponseBuilder.build(HttpStatus.BAD_REQUEST, "Fail to create order", null);
         }
         orderDetailRepo.saveAll(orderDetailList);
-        return ResponseBuilder.build(HttpStatus.CREATED, "Order created", null);
+        Map<String, Object> data = new HashMap<>();
+        data.put("orderId", order.getId());
+        return ResponseBuilder.build(HttpStatus.CREATED, "Order created", data);
     }
 
     @Override
