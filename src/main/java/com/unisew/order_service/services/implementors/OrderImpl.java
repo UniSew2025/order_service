@@ -233,7 +233,7 @@ public class OrderImpl implements OrderService {
             order.setDeadline(quotation.getEarlyDeliveryDate());
             long serviceFee = Math.round(quotation.getPrice() * 0.1);
             order.setServiceFee(serviceFee);
-            order.setStatus(Status.ORDER_PAID);
+            order.setStatus(Status.ORDER_PENDING_QUOTE);
 
             orderRepo.save(order);
             quotationRepo.save(quotation);
