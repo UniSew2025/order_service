@@ -59,6 +59,9 @@ public class Order {
     @Column(name = "`garment_id`")
     Integer garmentId;
 
+    @Column(name = "`garment_name`")
+    String garmentName;
+
     @OneToMany(mappedBy = "order")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
