@@ -68,13 +68,13 @@ public class OrderImpl implements OrderService {
     private ResponseEntity<ResponseObject> createOrderDetail(Order order, CreateOrderRequest request) {
         List<OrderDetail> orderDetailList = new ArrayList<>();
 
-        for (CreateOrderRequest.Cloth cloth : request.getClothList()) {
-            for (CreateOrderRequest.Size size : cloth.getSizeList()) {
-                ClothSize cSize = ClothSize.findByNameAndTypeAndGender(size.getName(), cloth.getType(), cloth.getGender());
+        for (CreateOrderRequest.DesignItem item : request.getItemList()) {
+            for (CreateOrderRequest.Size size : item.getSizeList()) {
+                ClothSize cSize = ClothSize.findByNameAndTypeAndGender(size.getName(), item.getType(), item.getGender());
 
                 orderDetailList.add(
                         OrderDetail.builder()
-                                .clothId(cloth.getId())
+                                .itemId(item.getId())
                                 .order(order)
                                 .size(cSize)
                                 .quantity(size.getQuantity())
@@ -141,7 +141,7 @@ public class OrderImpl implements OrderService {
             map.put("id", detail.getId());
             map.put("size", detail.getSize().getSize());
             map.put("quantity", detail.getQuantity());
-            map.put("clothId", detail.getClothId());
+            map.put("itemId", detail.getItemId());
             return map;
         }).toList();
     }

@@ -17,7 +17,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CreateOrderRequest {
     Integer schoolId;
-    List<Cloth> clothList;
+    List<DesignItem> itemList;
     LocalDate deadline;
     String note;
 
@@ -26,7 +26,7 @@ public class CreateOrderRequest {
     @NoArgsConstructor
     @Builder
     @FieldDefaults(level = AccessLevel.PRIVATE)
-    public static class Cloth {
+    public static class DesignItem {
         Integer id;
         String type;
         String gender;
