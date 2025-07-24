@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -263,6 +264,14 @@ public class OrderImpl implements OrderService {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ResponseObject.builder().message("Invalid action").build());
         }
+    }
+
+    @Override
+    public boolean isSafeToBan(int garmentId) {
+        List<Order> order = orderRepo.findAllByGarmentId(garmentId).stream()
+                .filter(order1 -> order1.getStatus() != Status.ORDER_COMPLETED)
+                .toList();
+        return order.isEmpty();
     }
 
 }
