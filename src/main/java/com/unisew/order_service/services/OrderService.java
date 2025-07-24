@@ -6,6 +6,8 @@ import com.unisew.order_service.requests.ProcessQuotationRequest;
 import com.unisew.order_service.response.ResponseObject;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 public interface OrderService {
 
     ResponseEntity<ResponseObject> createOrder(CreateOrderRequest request);
@@ -18,4 +20,5 @@ public interface OrderService {
 
     ResponseEntity<ResponseObject> processQuotation(ProcessQuotationRequest request);
 
+    boolean isSafeToBan(int garmentId);
 }
